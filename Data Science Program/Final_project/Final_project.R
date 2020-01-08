@@ -5,6 +5,9 @@ library(caret)
 library(dslabs)
 library(hopach)
 library(ggfortify)
+library(ggplot2)
+library(gridExtra)
+library(grid)
 
 
 seeds <- read.delim("seeds_dataset.txt")
@@ -16,6 +19,49 @@ seeds$Class <- replace(seeds$Class, seeds$Class==1.00, "Kama") %>% replace( seed
 
 seeds <- na.omit(seeds)
 
+# Data visualization
+
+DhistPl <-    ggplot(seeds, aes(x=Area, colour=Class, fill=Class)) +
+  geom_density(alpha=.3) +
+  xlab("Area (mm2)") +  
+  ylab("Density")+
+  theme(legend.position="none")
+
+DhistPw <- ggplot(seeds, aes(x=Perimeter, colour=Class, fill=Class)) +
+  geom_density(alpha=.3) +
+  xlab("Perimeter(mm)") +  
+  ylab("Density")
+
+
+
+DhistSw <- ggplot(seeds, aes(x=Compactness, colour=Class, fill=Class)) +
+  geom_density(alpha=.3) +
+  xlab("Compactness") +  
+  ylab("Density")+
+  theme(legend.position="none")
+
+
+DhistSl <- ggplot(seeds, aes(x=Kernel_length, colour=Class, fill=Class)) +
+  geom_density(alpha=.3) +
+  xlab("Kernel_length") +  
+  ylab("Density")+
+  theme(legend.position="none")
+
+
+# Plot all density visualizations
+grid.arrange(DhistSl + ggtitle(""),
+             DhistSw  + ggtitle(""),
+             DhistPl + ggtitle(""),
+             DhistPw  + ggtitle(""),
+             nrow = 2,
+             top = textGrob("Seeds Density Plot", 
+                            gp=gpar(fontsize=15))
+)
+
+
+
+
+# Data processing
 seeds_x <- data.frame(seeds[,1:7])
 
 seeds_y <- data.frame(seeds[,8])
