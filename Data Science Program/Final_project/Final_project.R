@@ -14,6 +14,10 @@ seeds <- read.delim("seeds_dataset.txt")
 
 names(seeds) <- c("Area","Perimeter","Compactness","Kernel_length","Kernel_width","Asymmetry","kernel_groove","Class")
 
+seeds <- na.omit(seeds)
+
+y <- seeds$Class
+
 seeds$Class <- replace(seeds$Class, seeds$Class==1.00, "Kama") %>% replace( seeds$Class==2.00, "Rosa") %>% replace(seeds$Class==3.00, "Canadian")
 
 
@@ -97,7 +101,7 @@ x_scaled <- df
 
 test_index <- createDataPartition(seeds_x$Perimeter, times = 1, p = 0.2, list = FALSE)
 test_x <- x_scaled[test_index,]
-test_y <- seeds_y[test_index]
+test_y <- y[test_index]
 train_x <- x_scaled[-test_index,]
 train_y <- seeds_y[-test_index]
 
@@ -161,6 +165,8 @@ ensemble_preds  <- apply(ensemble[,-1], 1, function(idx) {
 })
 sapply(ensemble_preds, paste, sep="", collapse = "")
 
-ensemble_preds <- replace(ensemble_preds, ensemble_preds==1, "Kama") %>% replace( ensemble_preds==2, "Rosa") %>% replace(ensemble_preds==3, "Canadian")
+#ensemble_preds <- replace(ensemble_preds, ensemble_preds==1, "Kama") %>% replace( ensemble_preds==2, "Rosa") %>% replace(ensemble_preds==3, "Canadian")
 
-mean(ensemble_preds == test_y)
+accuracy <- mean(na.omit(as.numeric(as.character(ensemble_preds)) == test_y))
+accuracy
+
