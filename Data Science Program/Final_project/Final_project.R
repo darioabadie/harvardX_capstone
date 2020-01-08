@@ -21,39 +21,60 @@ seeds <- na.omit(seeds)
 
 # Data visualization
 
-DhistPl <-    ggplot(seeds, aes(x=Area, colour=Class, fill=Class)) +
+D1 <-    ggplot(seeds, aes(x=Area, colour=Class, fill=Class)) +
   geom_density(alpha=.3) +
   xlab("Area (mm2)") +  
   ylab("Density")+
   theme(legend.position="none")
 
-DhistPw <- ggplot(seeds, aes(x=Perimeter, colour=Class, fill=Class)) +
+D2 <- ggplot(seeds, aes(x=Perimeter, colour=Class, fill=Class)) +
   geom_density(alpha=.3) +
   xlab("Perimeter(mm)") +  
   ylab("Density")
 
 
 
-DhistSw <- ggplot(seeds, aes(x=Compactness, colour=Class, fill=Class)) +
+D3 <- ggplot(seeds, aes(x=Compactness, colour=Class, fill=Class)) +
   geom_density(alpha=.3) +
   xlab("Compactness") +  
   ylab("Density")+
   theme(legend.position="none")
 
 
-DhistSl <- ggplot(seeds, aes(x=Kernel_length, colour=Class, fill=Class)) +
+D4 <- ggplot(seeds, aes(x=Kernel_length, colour=Class, fill=Class)) +
   geom_density(alpha=.3) +
   xlab("Kernel_length") +  
   ylab("Density")+
   theme(legend.position="none")
 
+D5 <- ggplot(seeds, aes(x=Kernel_width, colour=Class, fill=Class)) +
+  geom_density(alpha=.3) +
+  xlab("Kernel_width") +  
+  ylab("Density")+
+  theme(legend.position="none")
+
+D6 <- ggplot(seeds, aes(x=Asymmetry, colour=Class, fill=Class)) +
+  geom_density(alpha=.3) +
+  xlab("Asymmetry") +  
+  ylab("Density")+
+  theme(legend.position="none")
+
+D7 <- ggplot(seeds, aes(x=kernel_groove, colour=Class, fill=Class)) +
+  geom_density(alpha=.3) +
+  xlab("kernel_groove") +  
+  ylab("Density")+
+  theme(legend.position="none")
+
 
 # Plot all density visualizations
-grid.arrange(DhistSl + ggtitle(""),
-             DhistSw  + ggtitle(""),
-             DhistPl + ggtitle(""),
-             DhistPw  + ggtitle(""),
-             nrow = 2,
+grid.arrange(D1 + ggtitle(""),
+             D2  + ggtitle(""),
+             D3 + ggtitle(""),
+             D4 + ggtitle(""),
+             D5  + ggtitle(""),
+             D6 + ggtitle(""),
+             D7 + ggtitle(""),
+             nrow = 4,
              top = textGrob("Seeds Density Plot", 
                             gp=gpar(fontsize=15))
 )
