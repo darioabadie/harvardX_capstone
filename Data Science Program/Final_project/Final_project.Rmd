@@ -114,13 +114,13 @@ In this section we analyze the *seeds* object. We generate histograms for each f
 ```{r visualization , echo = TRUE}
 D1 <-    ggplot(seeds, aes(x=Area, colour=Class, fill=Class)) +
   geom_density(alpha=.3) +
-  xlab("Area (mm2)") +  
+  xlab("Area") +  
   ylab("Density")+
   theme(legend.position="none")
 
 D2 <- ggplot(seeds, aes(x=Perimeter, colour=Class, fill=Class)) +
   geom_density(alpha=.3) +
-  xlab("Perimeter(mm)") +  
+  xlab("Perimeter") +  
   ylab("Density")
 
 
@@ -166,11 +166,28 @@ grid.arrange(D1 + ggtitle(""),
              D6 + ggtitle(""),
              D7 + ggtitle(""),
              nrow = 4,
-             top = textGrob("Seeds Density Plot", 
+             top = textGrob("Wheat seeds Density Plot", 
                             gp=gpar(fontsize=15))
 )
 
 ```
+
+Additionally we create *Box plots* for each feature to complement the analysis.
+
+```{r boxplot , echo = TRUE}
+grid.arrange(
+  ggplot(seeds, aes(Class, Area)) + geom_boxplot() + ggtitle(""),
+  ggplot(seeds, aes(Class, Perimeter)) + geom_boxplot() + ggtitle(""),
+  ggplot(seeds, aes(Class, Compactness)) + geom_boxplot() + ggtitle(""),
+  ggplot(seeds, aes(Class, Kernel_length)) + geom_boxplot() + ggtitle(""),
+  ggplot(seeds, aes(Class, Kernel_width)) + geom_boxplot() + ggtitle(""),
+  ggplot(seeds, aes(Class, Asymmetry)) + geom_boxplot() + ggtitle(""),
+  ggplot(seeds, aes(Class, kernel_groove)) + geom_boxplot() + ggtitle(""),
+  
+             top = textGrob("Wheat seeds Box Plot", 
+                            gp=gpar(fontsize=15)))
+```
+
 
 Although we can appreciate some patters in the previous histograms, the classification between classes is not evident. As consequence, we need to apply machine learning algorithms called *Classifiers*.
 
