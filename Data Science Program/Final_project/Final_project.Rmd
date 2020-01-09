@@ -69,7 +69,7 @@ head(seeds) %>%
 
 These dataset contains seven predictors and the class of each sample. According to the dataset documentation, the predictors are: Area, Perimeter, Compactness, Kernel length, Kernel width, Asymmetry, and Kernel groove, whereas the classes are Kama, Rosa and Canadian.
 
-We additionally perform a s summary of these subsets in order to check if there are missing values.
+We additionally perform a summary in order to check if there are missing values.
 
 
 ```{r summary_edx, echo = TRUE}
