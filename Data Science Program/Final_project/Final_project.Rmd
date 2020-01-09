@@ -30,23 +30,15 @@ The following task were performed in order to develop the recommender system:
 * Data load: Data is extractd from the original source and loaded in our work environment.
 * Data processing: Transformations are applied on data in order to obtain the features that will be used in the following sections of the study.
 * Data exploration: Different visualization techniques are used to obtain insights about the predictors and their behaviour. 
-* Classifiers: Six classifiers are evaluated in order to identify the most accurate one. 
+* Classification algorithms: Six classifiers are evaluated in order to identify the most accurate one. 
 
 
 ## Data load
 
-The dataset must be previously downloaded from the follwing link 
-https://archive.ics.uci.edu/ml/datasets/seeds and then copied in the project directory. 
-
+Before start working on the dataset, it is necessary to add the required libraries.
 
 ```{r, echo = TRUE, message = FALSE, warning = FALSE, eval = TRUE}
-
-seeds <- read.delim("seeds_dataset.txt")
-  
-```
-
-```{r, echo = TRUE, message = FALSE, warning = FALSE, eval = TRUE}
-
+set.seed(7)
 library(matrixStats)
 library(tidyverse)
 library(caret)
@@ -56,6 +48,17 @@ library(ggfortify)
 library(ggplot2)
 library(gridExtra)
 library(grid)
+```
+
+
+The dataset must be previously downloaded from the follwing link 
+https://archive.ics.uci.edu/ml/datasets/seeds and then copied in the project directory. 
+
+
+```{r, echo = TRUE, message = FALSE, warning = FALSE, eval = TRUE}
+
+seeds <- read.delim("seeds_dataset.txt")
+  
 ```
 
 ```{r head_validation, echo = TRUE}
@@ -76,6 +79,7 @@ summary(seeds)
 
 ## Data processing
 
+
 As result of the *summary* performed in the last section, we observe the presence of missing values in the dataset. It is necessary to delete them with the next line of code.
 
 ```{r na, echo = TRUE}
@@ -84,8 +88,9 @@ seeds <- na.omit(seeds)
 
 Now we proceed to add the names of each column according to their meaning.
 
-```{r names, echo = TRUE}
-names(seeds) <- c("Area","Perimeter","Compactness","Kernel_length","Kernel_width","Asymmetry","kernel_groove","Class")
+```{r names, tidy=TRUE, echo = TRUE}
+names(seeds) <- c("Area","Perimeter","Compactness","Kernel_length","Kernel_width",
+                  "Asymmetry","kernel_groove","Class")
 ```
 
 Finally we replace the class (1, 2 and 3) with their names too (Kama, Rosa and Canadian).
@@ -94,8 +99,11 @@ Finally we replace the class (1, 2 and 3) with their names too (Kama, Rosa and C
 
 y <- seeds$Class # We save the original values since they will be useful later
 
-seeds$Class <- replace(seeds$Class, seeds$Class==1.00, "Kama") %>% replace( seeds$Class==2.00, "Rosa") %>% replace(seeds$Class==3.00, "Canadian")
+seeds$Class <- replace(seeds$Class, seeds$Class==1.00, "Kama") %>% replace(
+  seeds$Class==2.00, "Rosa") %>% replace(seeds$Class==3.00, "Canadian")
 
+head(seeds) %>%
+  print.data.frame()
 ```
 
 
@@ -197,7 +205,8 @@ x_scaled <- df
 In order to validate the performance of the algorithm, it is required to split the dataset into training and testing sets. All the classifiers will be developed using the training set and later evaluated on the testing set. In this study we assign 80% of the dataset for training and 20% for testing.
 
 ```{r partition, echo = TRUE}
-test_index <- createDataPartition(seeds_x$Perimeter, times = 1, p = 0.2, list = FALSE) # Create the partition
+test_index <- createDataPartition(seeds_x$Perimeter, times = 1, p = 0.2, 
+                                  list = FALSE) # Create the partition
 
 test_x <- x_scaled[test_index,] # Testing set
 test_y <- y[test_index]
@@ -246,7 +255,7 @@ results %>% knitr::kable()
 
 We repeat the process for the rest of the algorithms.
 
-```{r algorithms, echo = TRUE, warning = FALSE}
+```{r algorithms, echo = TRUE, warning = FALSE, message= FALSE}
 
 # QDA
 fit <- train(y ~ ., method = "qda", data = train_df)
@@ -263,7 +272,8 @@ loess_accuracy <- mean(loess_preds == test_y)
 results <- bind_rows(results, data_frame(Algorithm = "LOESS", Accuracy = loess_accuracy ))
 
 # Random Forest
-fit <- train(y ~ ., method = 'rf', data = train_df,metric = "Accuracy",tuneGrid = expand.grid(.mtry=c(3,5,7,9)))
+fit <- train(y ~ ., method = 'rf', data = train_df,metric = "Accuracy",tuneGrid =
+               expand.grid(.mtry=c(3,5,7,9)))
 rf_preds <- predict(fit,test_x)
 levels(rf_preds) <- c(3,1,2)
 rf_accuracy <- mean(rf_preds == test_y)
@@ -281,8 +291,13 @@ results <- bind_rows(results, data_frame(Algorithm = "Knn", Accuracy = knn_accur
 Additionally we perform and ensemble of this algorithms in order to obtain a system which makes its decisions based on majority vote.
 
 ```{r ensemble, echo = TRUE, warning = FALSE}
-# We create a dataframe containing the results of each algorithm. It is necessary to convert every prediction from factor to numeric.
-ensemble <- cbind(lda =as.numeric(as.character(lda_preds)), qda =  as.numeric(as.character(qda_preds)), rf = as.numeric(as.character(rf_preds)), loess = as.numeric(as.character(loess_preds)), knn = as.numeric(as.character(knn_preds)))
+# We create a dataframe containing the results of each algorithm. 
+#It is necessary to convert every prediction from factor to numeric.
+ensemble <- cbind(lda =as.numeric(as.character(lda_preds)), 
+                  qda =  as.numeric(as.character(qda_preds)), 
+                  rf = as.numeric(as.character(rf_preds)), 
+                  loess = as.numeric(as.character(loess_preds)), 
+                  knn = as.numeric(as.character(knn_preds)))
 
 # Now we calculate the majority vote for each sample
 ensemble_preds  <- apply(ensemble[,-1], 1, function(idx) {
@@ -293,7 +308,8 @@ sapply(ensemble_preds, paste, sep="", collapse = "")
 # Accuracy is calculated
 ensemple_accuracy <- mean(na.omit(as.numeric(as.character(ensemble_preds)) == test_y))
 
-results <- bind_rows(results, data_frame(Algorithm = "Ensemble", Accuracy = ensemple_accuracy )) # Save results
+results <- bind_rows(results, data_frame(Algorithm = "Ensemble", 
+                                         Accuracy = ensemple_accuracy )) # Save results
 
 ```
 
@@ -305,16 +321,16 @@ The accuracy of each the model are located in the following table:
 results %>% knitr::kable()
 ```
 
-We therefore conclude that the highest accuracy was 0.8649559 using the *Regularized movie and user effect model*.
+We therefore conclude that the highest accuracy was 0.9756098 using the *LDA* algorithm. Except for *LOESS* algorithm, we can affirm that the rest of the classifiers obtained decent results too.
 
 # Conclusions
 
 We can succesfully state that we built a machine learning algorithm to classify wheat seeds based on the Seeds dataset.
-The regularized model including the movie and user effect proved to be the most accurate one in the present project, obtaining a RMSE of 0.8649559, significantly lower than the initial model with a RMSE of 1.0606666.
+The *LDA* algorithm proved to be the most accurate classifier in the present project, obtaining an accuracy of 0.9756098.
 
 # Future works
 
-We have obtained a recommender system that provides decent predictions for movie ratings. This algorithm was developed following data exploration analysis and intuition. It would be convenient for future works to add other predictive models such as Random Forest, SVM, PCA, Knn, etc. An interesting project would be developing an ensemble of different models in order to obtain a prediction based on the mayority vote of these models.
+We have obtained a recommender system that provides accurate results for wheat seed classification. This algorithm was developed following data exploration analysis and machine learning algorithms. It would be convenient for future works to add more classification algorithms to the ensemble in order to improve accuracy and generate a more robust system.
 
 # References
 * [1] - Wikipedia - Statistical classification -  https://en.wikipedia.org/wiki/Statistical_classification
